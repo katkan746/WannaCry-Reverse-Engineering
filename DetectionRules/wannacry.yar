@@ -22,8 +22,4 @@ rule WannaCry_Generic
 
 
 
-
-
-
-
 }
